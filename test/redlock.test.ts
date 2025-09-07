@@ -76,7 +76,7 @@ describe('Redlock', () => {
         // Simulate delay
         setTimeout(() => {
           cb(null, mockUnlock);
-        }, 51); // Just over acquireThreshold
+        }, 60); // Just over acquireThreshold
       });
 
       const testFn = vi.fn(() => 'success');
@@ -94,7 +94,7 @@ describe('Redlock', () => {
       });
 
       const testFn = vi.fn(async () => {
-        await new Promise(resolve => setTimeout(resolve, 101)); // Just over releaseThreshold
+        await new Promise(resolve => setTimeout(resolve, 110)); // Just over releaseThreshold
         return 'success';
       });
 

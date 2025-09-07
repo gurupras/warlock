@@ -1,11 +1,12 @@
-
-import { v1 as uuidv1 } from 'uuid';
+import { customAlphabet } from 'nanoid'
 import * as fs from 'fs';
 import * as path from 'path';
 import { Redis } from 'ioredis';
 
 type Callback<T> = (err: Error | null, result?: T) => void;
 type Unlock = (cb?: Callback<number>) => void;
+
+const nanoid = customAlphabet('abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789')
 
 export interface Warlock {
   makeKey(key: string): string;
@@ -47,7 +48,7 @@ export default function (redis: Redis): Warlock {
       else throw err;
     }
 
-    const id = uuidv1();
+    const id = nanoid();
     redis.set(
       warlock.makeKey(key), id,
       'PX', ttl, 'NX',

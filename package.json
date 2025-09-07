@@ -2,13 +2,13 @@
   "name": "@gurupras/node-redis-warlock",
   "version": "1.0.2000",
   "description": "Battle-hardened distributed locking using redis",
-  "main": "dist/index.cjs",
-  "module": "dist/index.js",
-  "types": "dist/index.d.ts",
   "type": "module",
-  "files": [
-    "dist"
-  ],
+  "author": "Guru Srinivasa",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/gurupras/warlock/issues"
+  },
+  "homepage": "https://github.com/gurupras/warlock",
   "scripts": {
     "build": "vite build",
     "prepublishOnly": "npm run build",
@@ -16,22 +16,16 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/thedeveloper/warlock"
+    "url": "https://github.com/gurupras/warlock"
   },
   "keywords": [
     "node.js",
     "redis",
     "lock"
   ],
-  "author": "Geoff Wagstaff",
-  "license": "MIT",
-  "bugs": {
-    "url": "https://github.com/thedeveloper/warlock/issues"
-  },
-  "homepage": "https://github.com/thedeveloper/warlock",
   "dependencies": {
     "ioredis": "^5.4.1",
-    "uuid": "^8.3.2"
+    "nanoid": "^5.1.5"
   },
   "devDependencies": {
     "@types/node": "^24.3.1",
@@ -43,5 +37,25 @@
     "typescript": "^5.9.2",
     "vite-plugin-dts": "^4.5.4",
     "vitest": "^3.2.4"
+  },
+  "files": [
+    "dist"
+  ],
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs"
+    },
+    "./redlock": {
+      "types": "./dist/redlock.d.ts",
+      "import": "./dist/redlock.js",
+      "require": "./dist/redlock.cjs"
+    },
+    "./warlock": {
+      "types": "./dist/warlock.d.ts",
+      "import": "./dist/warlock.js",
+      "require": "./dist/warlock.cjs"
+    }
   }
 }
