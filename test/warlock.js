@@ -1,7 +1,7 @@
 const should = require('should');
-const Redis = require('redis');
+const Redis = require('ioredis');
 
-const redis = Redis.createClient({ port: 6386 });
+const redis = new Redis({ port: 6386 });
 const warlock = require('../lib/warlock')(redis);
 
 describe('locking', () => {
@@ -87,16 +87,11 @@ describe('touching a lock', function() {
     });
   });
 
-  it('alters expiry of the lock', function(done) {
-    redis.pttl(warlock.makeKey(key), function(err, ttl) {
-      warlock.touch(key, lockId, 2000, function(err) {
-        should.not.exist(err);
-        redis.pttl(warlock.makeKey(key), function(err, ttl2) {
-          (ttl2 > ttl).should.equal(true);
-          done();
-        });
-      });
-    });
+  it('alters expiry of the lock', async function() {
+    const ttl = await redis.pttl(warlock.makeKey(key));
+    await warlock.touch(key, lockId, 2000);
+    const ttl2 = await redis.pttl(warlock.makeKey(key));
+    (ttl2 > ttl).should.equal(true);
   });
 
   it('unlocks', function(done) {
