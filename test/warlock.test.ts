@@ -196,6 +196,33 @@ describe('error handling', () => {
       });
     });
   });
+
+  it('lock throws an error for non-string key without cb', async () => {
+    try {
+      // @ts-ignore
+      await warlock.lock(123, 1000);
+    } catch (e: any) {
+      expect(e.message).toBe('lock key must be string');
+    }
+  });
+
+  it('unlock throws an error for non-string key without cb', async () => {
+    try {
+      // @ts-ignore
+      await warlock.unlock(123, 'some-id');
+    } catch (e: any) {
+      expect(e.message).toBe('lock key must be string');
+    }
+  });
+
+  it('touch throws an error for non-string key without cb', async () => {
+    try {
+      // @ts-ignore
+      await warlock.touch(123, 'some-id', 1000);
+    } catch (e: any) {
+      expect(e.message).toBe('lock key must be string');
+    }
+  });
 });
 
 afterAll(() => {
