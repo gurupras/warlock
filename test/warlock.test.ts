@@ -1,9 +1,30 @@
-import { describe, it, expect, beforeAll, afterAll } from 'vitest';
-import Redis from 'ioredis';
+import { describe, it, expect, beforeAll, afterAll, beforeEach, afterEach } from 'vitest';
+import { Redis } from 'ioredis';
 import createWarlock, { Warlock } from '../lib/warlock';
+import { RedisMemoryServer } from 'redis-memory-server';
 
-const redis = new Redis({ port: 6386 });
-const warlock = createWarlock(redis);
+let redis: Redis;
+let warlock: Warlock;
+let redisServer: RedisMemoryServer;
+
+beforeAll(async () => {
+  redisServer = new RedisMemoryServer();
+});
+
+beforeEach(async () => {
+  const port = await redisServer.getPort();
+  redis = new Redis({ port });
+  warlock = createWarlock(redis);
+  await redis.ping();
+});
+
+afterEach(async () => {
+  await redis.quit();
+});
+
+afterAll(async () => {
+  await redisServer.stop();
+});
 
 describe('locking', () => {
   it('sets lock', async () => {
@@ -223,8 +244,4 @@ describe('error handling', () => {
       expect(e.message).toBe('lock key must be string');
     }
   });
-});
-
-afterAll(() => {
-  redis.disconnect();
 });

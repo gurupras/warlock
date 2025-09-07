@@ -2,19 +2,17 @@
   "name": "@gurupras/node-redis-warlock",
   "version": "1.0.2000",
   "description": "Battle-hardened distributed locking using redis",
-  "main": "dist/warlock.js",
-  "types": "dist/warlock.d.ts",
+  "main": "dist/index.cjs",
+  "module": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "type": "module",
   "files": [
     "dist"
   ],
   "scripts": {
-    "build": "tsc --project tsconfig.build.json",
+    "build": "vite build",
     "prepublishOnly": "npm run build",
-    "pretest": "npm run start-redis",
-    "posttest": "npm run cleanup",
-    "start-redis": "docker-compose up -d redis",
-    "test": "vitest run",
-    "cleanup": "docker-compose stop && docker-compose rm -f"
+    "test": "vitest run"
   },
   "repository": {
     "type": "git",
@@ -41,7 +39,9 @@
     "@vitest/coverage-istanbul": "^3.2.4",
     "eslint": "^9.35.0",
     "neostandard": "^0.12.2",
+    "redis-memory-server": "^0.13.0",
     "typescript": "^5.9.2",
+    "vite-plugin-dts": "^4.5.4",
     "vitest": "^3.2.4"
   }
 }

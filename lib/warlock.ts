@@ -9,7 +9,7 @@ type Unlock = (cb?: Callback<number>) => void;
 
 export interface Warlock {
   makeKey(key: string): string;
-  lock(key: string, ttl: number, cb: (err: Error | null, unlock?: Unlock | false, id?: string) => void): string;
+  lock(key: string, ttl: number, cb: (err: Error | null, unlock?: Unlock | false, id?: string) => void): void;
   unlock(key: string, id: string, cb?: Callback<number>): Promise<void>;
   optimistic(key: string, ttl: number, maxAttempts: number, wait: number, cb: (err: Error | null, unlock?: Unlock) => void): void;
   touch(key: string, id: string, ttl: number, cb?: Callback<number>): Promise<any>;
@@ -38,7 +38,7 @@ export default function (redis: Redis): Warlock {
     return `${key}:lock`;
   };
 
-  warlock.lock = function (key: string, ttl: number, cb: (err: Error | null, unlock?: Unlock | false, id?: string) => void): string {
+  warlock.lock = function (key: string, ttl: number, cb: (err: Error | null, unlock?: Unlock | false, id?: string) => void) {
     cb = cb || function () {};
 
     if (typeof key !== 'string') {
@@ -52,14 +52,15 @@ export default function (redis: Redis): Warlock {
       warlock.makeKey(key), id,
       'PX', ttl, 'NX',
       (err, lockSet) => {
-        if (err) return cb(err);
+        if (err) {
+          cb(err);
+          return
+        }
 
         const unlock: Unlock | false = lockSet ? warlock.unlock.bind(warlock, key, id) : false;
-        return cb(err, unlock, id);
+        cb(null, unlock, id);
       },
     );
-
-    return key;
   };
 
   warlock.unlock = async function (key: string, id: string, cb?: Callback<number>): Promise<void> {
