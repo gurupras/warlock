@@ -125,3 +125,79 @@ describe('touching a lock', () => {
     });
   });
 });
+
+describe('optimistic locking', () => {
+  it('acquires a lock', async () => {
+    await new Promise<void>((resolve) => {
+      warlock.optimistic('optimisticLock', 1000, 10, 100, (err, unlock) => {
+        expect(err).toBeNull();
+        expect(typeof unlock).toBe('function');
+        if (unlock) {
+          unlock(() => resolve());
+        } else {
+          throw new Error('Unlock function not provided');
+        }
+      });
+    });
+  });
+
+  it('fails to acquire a lock if it is already held', async () => {
+    // First, acquire the lock
+    await new Promise<void>((resolve) => {
+      warlock.lock('optimisticFail', 1000, (err, unlock) => {
+        expect(err).toBeNull();
+        expect(typeof unlock).toBe('function');
+        resolve();
+      });
+    });
+
+    // Then, try to acquire it again with optimistic locking
+    await new Promise<void>((resolve) => {
+      warlock.optimistic('optimisticFail', 1000, 2, 100, (err, unlock) => {
+        expect(err).toBeInstanceOf(Error);
+        expect(err?.message).toBe('unable to obtain lock');
+        expect(unlock).toBeUndefined();
+        resolve();
+      });
+    });
+  });
+});
+
+describe('error handling', () => {
+  it('lock throws an error for non-string key', async () => {
+    await new Promise<void>((resolve) => {
+      // @ts-ignore
+      warlock.lock(123, 1000, (err) => {
+        expect(err).toBeInstanceOf(Error);
+        expect(err?.message).toBe('lock key must be string');
+        resolve();
+      });
+    });
+  });
+
+  it('unlock throws an error for non-string key', async () => {
+    await new Promise<void>((resolve) => {
+      // @ts-ignore
+      warlock.unlock(123, 'some-id', (err) => {
+        expect(err).toBeInstanceOf(Error);
+        expect(err?.message).toBe('lock key must be string');
+        resolve();
+      });
+    });
+  });
+
+  it('touch throws an error for non-string key', async () => {
+    await new Promise<void>((resolve) => {
+      // @ts-ignore
+      warlock.touch(123, 'some-id', 1000, (err) => {
+        expect(err).toBeInstanceOf(Error);
+        expect(err?.message).toBe('lock key must be string');
+        resolve();
+      });
+    });
+  });
+});
+
+afterAll(() => {
+  redis.disconnect();
+});
