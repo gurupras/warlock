@@ -13,7 +13,7 @@
     "pretest": "npm run start-redis",
     "posttest": "npm run cleanup",
     "start-redis": "docker-compose up -d redis",
-    "test": "vitest",
+    "test": "vitest run",
     "cleanup": "docker-compose stop && docker-compose rm -f"
   },
   "repository": {
