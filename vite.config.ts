@@ -16,7 +16,9 @@ export default defineConfig({
       external: [
         'ioredis',
         'fs',
-        'path'
+        'path',
+        'url',
+        'nanoid'
       ],
       output: {
         exports: 'named',

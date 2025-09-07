@@ -1,6 +1,7 @@
 import { customAlphabet } from 'nanoid'
 import * as fs from 'fs';
-import * as path from 'path';
+import { dirname, resolve } from 'path';
+import { fileURLToPath } from 'url';
 import { Redis } from 'ioredis';
 
 type Callback<T> = (err: Error | null, result?: T) => void;
@@ -17,7 +18,7 @@ export interface Warlock {
 }
 
 function readRedisScript(scriptName: string): string {
-  const filepath = path.resolve(__dirname, `./lua/${scriptName}.lua`);
+  const filepath = resolve(dirname(fileURLToPath(import.meta.url)), `./lua/${scriptName}.lua`);
   const src = fs.readFileSync(filepath, { encoding: 'utf-8' });
   return src;
 }

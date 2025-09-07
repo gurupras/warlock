@@ -1,6 +1,6 @@
 {
   "name": "@gurupras/node-redis-warlock",
-  "version": "1.0.2000",
+  "version": "1.0.2001",
   "description": "Battle-hardened distributed locking using redis",
   "type": "module",
   "author": "Guru Srinivasa",
